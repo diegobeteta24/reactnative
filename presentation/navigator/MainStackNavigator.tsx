@@ -13,7 +13,7 @@ export const MainStackNavigator = () => {
     return (
 <Stack.Navigator initialRouteName="LoginScreen">
    <Stack.Screen options={{ headerShown: false }} name="LoginScreen" component={LoginScreen} />
-   <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+   <Stack.Screen options={{ headerShown: false }} name="RegisterScreen" component={RegisterScreen} />
  </Stack.Navigator>
     )
  
