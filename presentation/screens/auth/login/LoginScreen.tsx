@@ -1,11 +1,36 @@
-import { StyleSheet, Text, View, Image, TextInput, Button, Touchable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Button, Touchable, TouchableOpacity, Alert } from 'react-native';
 import DefaultTextInput from '../../../components/DefaultTextInput';
 import DefaultRoundedButton from '../../../components/DefaultRoundedButton';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../../../navigator/MainStackNavigator';
 import styles from './styles';
+import { useState } from 'react';
+import EmailValidator from '../../../utils/EmailValidator';
+
+//Validar correo electrónico
+
 interface Props extends StackScreenProps<RootStackParamList, 'LoginScreen'> { };
 export default function LoginScreen({ navigation, route}: Props) {
+
+
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = () => {
+        if (email === '' || password === '') {
+            Alert.alert('Error', 'Por favor, completa todos los campos.');
+            return;
+        }
+
+        if (!EmailValidator(email)) {
+            Alert.alert('Error', 'Por favor, ingresa un correo electrónico válido.');
+            return;
+        }
+
+         console.log('Iniciar Sesión con:', { email, password });
+    }
+
     return (
         <View style={styles.container}>
       <Image
@@ -26,16 +51,16 @@ export default function LoginScreen({ navigation, route}: Props) {
 
                 <DefaultTextInput
                     placeholder="Correo Electrónico"
-                    value='hola'
-                    onChangeText={text => { }}
+                    value={email}
+                    onChangeText={setEmail}
                     icon={require('../../../../assets/email.png')}
                     keyboardType='email-address'
                 />
                 <DefaultTextInput
                     placeholder="Contraseña"
-                    value='hola'
-                    onChangeText={text => { }}
-          icon={require('../../../../assets/password.png')}
+                    value={password}
+                    onChangeText={setPassword}
+                    icon={require('../../../../assets/password.png')}
                     secureTextEntry={true}
                 />
 
@@ -44,7 +69,9 @@ export default function LoginScreen({ navigation, route}: Props) {
 
                 <DefaultRoundedButton
                     text="Iniciar Sesión"
-                    onPress={() => { }}
+                    onPress={() => { 
+                        handleLogin();
+                    }}
                 />
 
                 <View style={styles.RegisterContainer}>
