@@ -4,11 +4,17 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'black',
     },
+    keyboardView: {
+        flex: 1,
+    },
     scrollContent: {
         flexGrow: 1,
+    },
+    formContainer: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100%',
+        paddingVertical: 20,
     },
     ImageBackground: {
         position: 'absolute',
@@ -23,7 +29,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 25,
         paddingVertical: 30,
-        marginVertical: 20,
     },
     imageUser: {
         width: 150,
