@@ -59,3 +59,24 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Running the dev server on 0.0.0.0 (LAN) and custom port
+
+If you want to expose the Laravel dev server to your local network (for mobile device or emulator testing), run the built-in server binding to 0.0.0.0 and a custom port. From the project root (PowerShell):
+
+```powershell
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+Notes:
+- Update `APP_URL` in your `.env` if you need generated URLs to match the host/port, for example `APP_URL=http://0.0.0.0:8000` (or better, use your machine IP: `http://192.168.x.y:8000`).
+- Ensure Windows Firewall allows incoming connections to the chosen port, or use a tunnel (ngrok) if you prefer not to open ports.
+- To serve uploaded files via `Storage::url()`, run `php artisan storage:link` once in your environment (this project already runs that when requested).
+- From a mobile device or emulator, use your machine's LAN IP (not `localhost`) when connecting to the API.
+
+If you want this to be a one-liner in PowerShell you can run (from project root):
+
+```powershell
+php artisan storage:link; php artisan serve --host=0.0.0.0 --port=8000
+```
+
