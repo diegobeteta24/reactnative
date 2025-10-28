@@ -6,6 +6,7 @@ import { RootStackParamList } from '../../../navigator/MainStackNavigator';
 import styles from './styles';
 import { useState } from 'react';
 import EmailValidator from '../../../utils/EmailValidator';
+import Api from '../../../services/api';
 
 //Validar correo electrónico
 
@@ -29,6 +30,18 @@ export default function LoginScreen({ navigation, route}: Props) {
         }
 
          console.log('Iniciar Sesión con:', { email, password });
+        // simple login demo: call API and show token in alert
+        Api.login(email, password).then(res => {
+            if (res && res.token) {
+                Alert.alert('Login OK', 'Token:\n' + res.token);
+            } else if (res && res.user && res.user.token) {
+                Alert.alert('Login OK', 'Token:\n' + res.user.token);
+            } else {
+                Alert.alert('Login fallo', JSON.stringify(res));
+            }
+        }).catch(err => {
+            Alert.alert('Error', String(err));
+        });
     }
 
     return (
@@ -72,6 +85,12 @@ export default function LoginScreen({ navigation, route}: Props) {
                     onPress={() => { 
                         handleLogin();
                     }}
+                />
+
+                <DefaultRoundedButton
+                    text="Probar Editar Perfil"
+                    onPress={() => navigation.navigate('ProfileEditScreen') }
+                    backgroundColor="#0066cc"
                 />
 
                 <View style={styles.RegisterContainer}>
