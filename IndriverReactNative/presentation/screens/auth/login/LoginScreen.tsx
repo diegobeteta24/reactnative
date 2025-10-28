@@ -6,7 +6,8 @@ import { RootStackParamList } from '../../../navigator/MainStackNavigator';
 import styles from './styles';
 import { useState } from 'react';
 import EmailValidator from '../../../utils/EmailValidator';
-import Api from '../../../services/api';
+import { AuthRepositoryImpl } from '../../../data/repositories/AuthRepositoryImpl';
+import { useLoginViewModel } from '../../../viewmodel/useLoginViewModel';
 
 //Validar correo electrónico
 
@@ -15,10 +16,12 @@ export default function LoginScreen({ navigation, route}: Props) {
 
 
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const repo = new (AuthRepositoryImpl as any)();
+    const vm = useLoginViewModel(repo as any);
 
-    const handleLogin = () => {
+    const { email, setEmail, password, setPassword, loading, error, login } = vm;
+
+    const handleLogin = async () => {
         if (email === '' || password === '') {
             Alert.alert('Error', 'Por favor, completa todos los campos.');
             return;
@@ -29,30 +32,24 @@ export default function LoginScreen({ navigation, route}: Props) {
             return;
         }
 
-         console.log('Iniciar Sesión con:', { email, password });
-        // simple login demo: call API and show token in alert
-                (async () => {
-                    try {
-                        const res = await Api.login(email, password);
-                        const token = res?.token ?? res?.user?.token ?? null;
-                        if (token) {
-                            navigation.navigate('ProfileEditScreen', { token });
-                        } else {
-                            Alert.alert('Login', 'Inicio de sesión completado, pero no se recibió token.');
-                        }
-                    } catch (err: any) {
-                        // err is our normalized error from api.ts
-                        if (err?.errors) {
-                            // validation errors from backend
-                            const msgs = Object.values(err.errors).flat().join('\n');
-                            Alert.alert('Errores de validación', msgs);
-                        } else if (err?.message) {
-                            Alert.alert('Error', String(err.message));
-                        } else {
-                            Alert.alert('Error', 'Error desconocido.');
-                        }
-                    }
-                })();
+        try {
+            const res = await login();
+            const token = res?.token ?? res?.user?.token ?? null;
+            if (token) {
+                navigation.navigate('ProfileEditScreen', { token });
+            } else {
+                Alert.alert('Login', 'Inicio de sesión completado, pero no se recibió token.');
+            }
+        } catch (e: any) {
+            // ViewModel already set error state; show it
+            if (vm.error) {
+                Alert.alert('Error', vm.error);
+            } else if (e?.message) {
+                Alert.alert('Error', String(e.message));
+            } else {
+                Alert.alert('Error', 'Error al iniciar sesión');
+            }
+        }
     }
 
     return (
