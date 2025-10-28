@@ -8,45 +8,32 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    private UserService $users;
+
+    public function __construct(UserService $users)
+    {
+        $this->users = $users;
+    }
+
     public function register(RegisterRequest $request)
     {
         // Request is already validated by RegisterRequest
-        $user = User::create([
-            'name' => $request->name,
-            'lastname' => $request->lastname,
-            'email' => $request->email,
+
+        $data = array_merge($request->validated(), [
+            // hash the password before delegating to the service
             'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'image' => $request->image,
-            'notification_token' => $request->notification_token,
-            'is_active' => true,
         ]);
 
-        // Attach role via pivot. If client didn't send a role, default to CLIENT.
-        $roleId = $request->input('role', 'CLIENT');
-        $role = Role::find($roleId);
-        if (! $role) {
-            // fallback to CLIENT if provided role not found
-            $role = Role::find('CLIENT');
-        }
+        $result = $this->users->register($data);
 
-        if ($role) {
-            $user->roles()->attach($role->id);
-        }
-
-        // Create JWT token for the user
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 201);
+        return response()->json($result, 201);
     }
 
     public function login(LoginRequest $request)
@@ -54,36 +41,24 @@ class AuthController extends Controller
         // Request is validated by LoginRequest
         $credentials = $request->only('email', 'password');
 
-        if (! $token = JWTAuth::attempt($credentials)) {
+        $result = $this->users->login($credentials);
+        if (! $result) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $user = JWTAuth::user();
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ]);
+        return response()->json($result);
     }
 
     public function logout(Request $request)
     {
-        // Invalidate the token
-        try {
-            $token = JWTAuth::getToken();
-            if ($token) {
-                JWTAuth::invalidate($token);
-            }
-        } catch (\Exception $e) {
-            // ignore
-        }
+        $this->users->logout();
 
         return response()->json(['message' => 'Logged out']);
     }
 
     public function user(Request $request)
     {
-        // Return authenticated user via JWT
-        return response()->json(JWTAuth::user());
+        // Delegate to service
+        return response()->json($this->users->me());
     }
 }
