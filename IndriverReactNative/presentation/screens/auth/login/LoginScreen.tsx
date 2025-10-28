@@ -32,10 +32,10 @@ export default function LoginScreen({ navigation, route}: Props) {
          console.log('Iniciar Sesión con:', { email, password });
         // simple login demo: call API and show token in alert
         Api.login(email, password).then(res => {
-            if (res && res.token) {
-                Alert.alert('Login OK', 'Token:\n' + res.token);
-            } else if (res && res.user && res.user.token) {
-                Alert.alert('Login OK', 'Token:\n' + res.user.token);
+            const token = res?.token ?? res?.user?.token ?? null;
+            if (token) {
+                // navigate to ProfileEditScreen and pass token so user can copy/use it
+                navigation.navigate('ProfileEditScreen', { token });
             } else {
                 Alert.alert('Login fallo', JSON.stringify(res));
             }

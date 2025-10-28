@@ -6,7 +6,7 @@ import ProfileEditScreen from "../screens/profile/ProfileEditScreen";
 export type RootStackParamList = {
  LoginScreen: undefined,
  RegisterScreen : undefined,
- ProfileEditScreen: undefined,
+ ProfileEditScreen: { token?: string } | undefined,
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

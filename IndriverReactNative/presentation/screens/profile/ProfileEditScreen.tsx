@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import * as Api from '../../services/api';
 
 export default function ProfileEditScreen() {
-  const [token, setToken] = useState('');
+  const route: any = useRoute();
+  const initialToken = route?.params?.token ?? '';
+  const [token, setToken] = useState(initialToken);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialToken) {
+      setToken(initialToken);
+    }
+  }, [initialToken]);
 
   const handleUpdate = async () => {
     if (!token) {
