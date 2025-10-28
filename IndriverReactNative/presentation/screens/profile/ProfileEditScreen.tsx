@@ -29,13 +29,23 @@ export default function ProfileEditScreen() {
       if (name) data.name = name;
       if (phone) data.phone = phone;
       if (imageUrl) data.image = imageUrl; // backend accepts image as URL
-
       const res = await Api.updateUserJson(token, data);
       setLoading(false);
-      Alert.alert('Respuesta', JSON.stringify(res, null, 2));
+      // Show friendly success message or minimal info
+      Alert.alert('Actualizado', 'Perfil actualizado correctamente.');
+      // Optionally show the returned user
+      console.log('Update response', res);
     } catch (err) {
       setLoading(false);
-      Alert.alert('Error', String(err));
+      const e: any = err;
+      if (e?.errors) {
+        const msgs = Object.values(e.errors).flat().join('\n');
+        Alert.alert('Errores de validación', msgs);
+      } else if (e?.message) {
+        Alert.alert('Error', String(e.message));
+      } else {
+        Alert.alert('Error', 'Error desconocido');
+      }
     }
   };
 

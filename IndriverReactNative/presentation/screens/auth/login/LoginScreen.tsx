@@ -31,17 +31,28 @@ export default function LoginScreen({ navigation, route}: Props) {
 
          console.log('Iniciar Sesión con:', { email, password });
         // simple login demo: call API and show token in alert
-        Api.login(email, password).then(res => {
-            const token = res?.token ?? res?.user?.token ?? null;
-            if (token) {
-                // navigate to ProfileEditScreen and pass token so user can copy/use it
-                navigation.navigate('ProfileEditScreen', { token });
-            } else {
-                Alert.alert('Login fallo', JSON.stringify(res));
-            }
-        }).catch(err => {
-            Alert.alert('Error', String(err));
-        });
+                (async () => {
+                    try {
+                        const res = await Api.login(email, password);
+                        const token = res?.token ?? res?.user?.token ?? null;
+                        if (token) {
+                            navigation.navigate('ProfileEditScreen', { token });
+                        } else {
+                            Alert.alert('Login', 'Inicio de sesión completado, pero no se recibió token.');
+                        }
+                    } catch (err: any) {
+                        // err is our normalized error from api.ts
+                        if (err?.errors) {
+                            // validation errors from backend
+                            const msgs = Object.values(err.errors).flat().join('\n');
+                            Alert.alert('Errores de validación', msgs);
+                        } else if (err?.message) {
+                            Alert.alert('Error', String(err.message));
+                        } else {
+                            Alert.alert('Error', 'Error desconocido.');
+                        }
+                    }
+                })();
     }
 
     return (

@@ -32,7 +32,34 @@ export default function RegisterScreen({ navigation, route }: Props) {
             return;
         }
 
-        console.log('Registro con:', { name, lastName, email, phone, password });
+        (async () => {
+            try {
+                const payload = {
+                    name,
+                    lastname: lastName,
+                    email,
+                    phone,
+                    password,
+                    password_confirmation: confirmPassword,
+                };
+                const res = await (await import('../../../services/api')).register(payload);
+                if (res?.user) {
+                    Alert.alert('Registro', 'Usuario creado correctamente. Revisa tu email si es necesario.');
+                    navigation.goBack();
+                } else {
+                    Alert.alert('Registro', JSON.stringify(res));
+                }
+            } catch (err: any) {
+                if (err?.errors) {
+                    const msgs = Object.values(err.errors).flat().join('\n');
+                    Alert.alert('Errores de validación', msgs);
+                } else if (err?.message) {
+                    Alert.alert('Error', String(err.message));
+                } else {
+                    Alert.alert('Error', 'Error desconocido al registrar.');
+                }
+            }
+        })();
     }
 
     return (
