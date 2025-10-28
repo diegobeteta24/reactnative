@@ -26,8 +26,8 @@ class UserSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Attach by role id (string)
-        $role = Role::find('passenger');
+        // Attach by role id (string) - default to CLIENT as requested
+        $role = Role::find('CLIENT');
         if ($role) {
             $user->roles()->attach($role->id);
         }
