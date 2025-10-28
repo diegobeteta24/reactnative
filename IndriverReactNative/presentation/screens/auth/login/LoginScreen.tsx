@@ -6,7 +6,7 @@ import { RootStackParamList } from '../../../navigator/MainStackNavigator';
 import styles from './styles';
 import { useState } from 'react';
 import EmailValidator from '../../../utils/EmailValidator';
-import { AuthRepositoryImpl } from '../../../data/repositories/AuthRepositoryImpl';
+import { AuthRepositoryImpl } from '../../../../data/repositories/AuthRepositoryImpl';
 import { useLoginViewModel } from '../../../viewmodel/useLoginViewModel';
 
 //Validar correo electrónico
