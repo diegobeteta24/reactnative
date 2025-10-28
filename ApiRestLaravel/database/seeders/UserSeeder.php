@@ -26,10 +26,11 @@ class UserSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Attach by role id (string) - default to CLIENT as requested
-        $role = Role::find('CLIENT');
-        if ($role) {
-            $user->roles()->attach($role->id);
+        // Attach all existing roles to admin user
+        $roleIds = Role::pluck('id')->toArray();
+        if (! empty($roleIds)) {
+            // syncWithoutDetaching to avoid duplicates if rerun
+            $user->roles()->syncWithoutDetaching($roleIds);
         }
     }
 }

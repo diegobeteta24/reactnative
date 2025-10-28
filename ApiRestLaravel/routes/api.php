@@ -13,4 +13,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     // Get any user by id (returns roles)
     Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show']);
+    // Update authenticated user
+    Route::match(['put','patch'],'/user', [\App\Http\Controllers\UserController::class, 'update']);
 });

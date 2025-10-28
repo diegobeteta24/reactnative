@@ -14,6 +14,8 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $appends = ['profile_image'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -80,5 +82,24 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    /**
+     * Accessor to return full profile image URL.
+     */
+    public function getProfileImageAttribute()
+    {
+        $value = $this->attributes['image'] ?? null;
+        if (! $value) {
+            return null;
+        }
+
+        // If it's already an absolute URL, return as-is
+        if (preg_match('#^https?://#i', $value)) {
+            return $value;
+        }
+
+        // Otherwise, assume storage path and build full URL
+        return url($value);
     }
 }
