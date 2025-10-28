@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Role;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserService
 {
@@ -85,6 +87,52 @@ class UserService
         if ($user) {
             $user->load('roles');
         }
+        return $user;
+    }
+
+    /**
+     * Update an existing user (partial) and return the user with roles.
+     * Accepts either a URL in the `image` field or a file upload `image`.
+     *
+     * @param int $id
+     * @param UpdateUserRequest $request
+     * @return User|null
+     */
+    public function update(int $id, UpdateUserRequest $request): ?User
+    {
+        $user = User::find($id);
+        if (! $user) {
+            return null;
+        }
+
+        if ($request->filled('name')) {
+            $user->name = $request->input('name');
+        }
+
+        if ($request->filled('lastname')) {
+            $user->lastname = $request->input('lastname');
+        }
+
+        if ($request->filled('phone')) {
+            $user->phone = $request->input('phone');
+        }
+
+        // If image is provided as a string (URL), store it directly
+        if ($request->filled('image') && is_string($request->input('image'))) {
+            $user->image = $request->input('image');
+        }
+
+        // If an image file was uploaded, store it in the public disk
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $path = $file->store("users/{$user->id}", 'public');
+            // Make the stored path accessible via /storage/... (ensure storage:link is run in deployment)
+            $user->image = Storage::url($path);
+        }
+
+        $user->save();
+        $user->load('roles');
+
         return $user;
     }
 }
