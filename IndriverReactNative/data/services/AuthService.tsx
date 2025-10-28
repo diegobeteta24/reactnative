@@ -1,4 +1,5 @@
 import Api from '../sources/remote/api/ApiRequestHandler';
+import { AuthRepositoryImpl } from '../repositories/AuthRepositoryImpl';
 import type { AuthResponse } from '../../domain/repositories/AuthRepository';
 
 const STORAGE_KEY = 'AUTH_TOKEN_V1';
@@ -44,7 +45,9 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
-    const res = await Api.post('/api/login', { email, password });
+    // delegate to repository implementation which uses the centralized Api handler
+    const repo = new AuthRepositoryImpl();
+    const res = await repo.login(email, password);
     const token = res?.token ?? res?.user?.token ?? null;
     if (token) {
       this.setToken(token);
@@ -53,6 +56,7 @@ export class AuthService {
   }
 
   async register(payload: Record<string, any>): Promise<AuthResponse> {
+    // register still goes through the API directly
     const res = await Api.post('/api/register', payload);
     const token = res?.token ?? res?.user?.token ?? null;
     if (token) this.setToken(token);
