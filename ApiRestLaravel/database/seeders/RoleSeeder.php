@@ -13,7 +13,8 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::firstOrCreate(['name' => 'passenger'], ['description' => 'Usuario pasajero']);
-        Role::firstOrCreate(['name' => 'driver'], ['description' => 'Usuario conductor']);
+        // Create roles using string ids to match the diagram
+        Role::updateOrCreate(['id' => 'passenger'], ['name' => 'Passenger', 'image' => null, 'route' => 'passenger']);
+        Role::updateOrCreate(['id' => 'driver'], ['name' => 'Driver', 'image' => null, 'route' => 'driver']);
     }
 }

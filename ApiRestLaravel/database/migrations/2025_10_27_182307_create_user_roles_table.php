@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_roles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('role_id')->constrained()->onDelete('cascade');
+        // Create pivot table exactly as in diagram: user_has_roles with id_user (INT) and id_rol (VARCHAR)
+        Schema::create('user_has_roles', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('id_user');
+            $table->string('id_rol');
             $table->timestamps();
 
-            $table->unique(['user_id', 'role_id']);
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('id_rol')->references('id')->on('roles')->onDelete('cascade');
+            $table->unique(['id_user', 'id_rol']);
         });
     }
 

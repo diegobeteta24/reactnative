@@ -23,8 +23,9 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'role',
-        'profile_image',
+        'lastname',
+        'image',
+        'notification_token',
         'is_active',
     ];
 
@@ -54,7 +55,7 @@ class User extends Authenticatable
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'user_roles');
+        return $this->belongsToMany(Role::class, 'user_has_roles', 'id_user', 'id_rol');
     }
 
     public function hasRole(string $role): bool

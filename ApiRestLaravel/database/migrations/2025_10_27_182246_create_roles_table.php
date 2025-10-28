@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('description')->nullable();
+            // id as string (varchar) to match the diagram (e.g., 'passenger', 'driver')
+            $table->string('id')->primary();
+            $table->string('name')->nullable();
+            $table->string('image')->nullable();
+            $table->string('route')->nullable();
             $table->timestamps();
         });
     }

@@ -17,15 +17,19 @@ class UserSeeder extends Seeder
     {
         $user = User::create([
             'name' => 'Admin User',
+            'lastname' => 'Admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
             'phone' => '+1234567890',
+            'image' => null,
+            'notification_token' => null,
             'is_active' => true,
         ]);
 
-        $role = Role::where('name', 'passenger')->first();
+        // Attach by role id (string)
+        $role = Role::find('passenger');
         if ($role) {
-            $user->roles()->attach($role);
+            $user->roles()->attach($role->id);
         }
     }
 }

@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
-    protected $fillable = ['name', 'description'];
+    // Use string primary key (id varchar) as in the ER diagram
+    protected $fillable = ['id', 'name', 'image', 'route'];
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'user_roles');
+        // pivot table user_has_roles with id_rol and id_user
+        return $this->belongsToMany(User::class, 'user_has_roles', 'id_rol', 'id_user');
     }
 }
