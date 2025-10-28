@@ -36,6 +36,8 @@ class UserService
         }
 
         // Create JWT token
+        // reload user with roles
+        $user->load('roles');
         $token = JWTAuth::fromUser($user);
 
         return ['user' => $user, 'token' => $token];
@@ -54,6 +56,7 @@ class UserService
         }
 
         $user = JWTAuth::user();
+        $user->load('roles');
 
         return ['user' => $user, 'token' => $token];
     }
@@ -78,6 +81,10 @@ class UserService
      */
     public function me(): ?User
     {
-        return JWTAuth::user();
+        $user = JWTAuth::user();
+        if ($user) {
+            $user->load('roles');
+        }
+        return $user;
     }
 }

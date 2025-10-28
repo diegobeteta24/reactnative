@@ -11,4 +11,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    // Get any user by id (returns roles)
+    Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show']);
 });
